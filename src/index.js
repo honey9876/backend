@@ -1,21 +1,21 @@
 //require('dotenv').config({path: './env'})
-
 import dotenv from "dotenv"
 // export const DB_NAME = "videotube";
 // import{DB_NAME} from "./constants"; 
 import connectDB from "./db/index.js";
 
-
-
-
 dotenv.config({
     path: './env'
 })
-
-
 connectDB()
-
-
+.then(() => {
+    app.listem(process.env.PORT || 8000, () => {
+        console.log(`server is running at port : ${process.env.PORT}`);
+    })
+})
+.catch((err) => {
+    console.log("MPNGO DB CONNECTION Failed !!!!", err);
+})
 
 
 
