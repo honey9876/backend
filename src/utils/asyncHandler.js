@@ -6,8 +6,17 @@
 }
 
 
-
 export {asyncHandeler}
+
+
+
+
+
+
+
+
+
+
 
 // const asyncHandeler = (func) => () => {}
 
