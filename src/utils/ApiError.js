@@ -3,7 +3,7 @@ class ApiError extends Error {
         statusCode,
         message="something went romg",
         errors = [],
-        statck = ""
+        stack = ""
 
     ){ //over ride
       super(message)
