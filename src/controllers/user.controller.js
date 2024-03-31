@@ -4,6 +4,7 @@ import {User} from "../models/user.model.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
 import { ApiResponse } from "../utils/ApiResponse.js";
+import  Jwt  from "jsonwebtoken";
 
 
 const generateAccessAndRefereshTokens = async(userId) => {
@@ -24,7 +25,6 @@ const generateAccessAndRefereshTokens = async(userId) => {
     
   }
 }
-
 
 
 const registerUser = asyncHandler( async (req, res) => {
@@ -108,8 +108,9 @@ const {fullNane, email, username, password } = req.body
 const LoginUser = asyncHandler(async(req, res) => {
 
    const {email, username, password} = req.body
+   console.log(email);
 
-   if(!username || !email) {
+   if(!username && !email) {
     throw new ApiError(400, "user oe password is required")
   }
 
@@ -184,8 +185,62 @@ const logoutUser = asyncHandler(async(req, res) => {
 
 })
 
+const refreshAccessToken = asyncHandler(async (req, res)=> {
+   const incomingRefersf = req.cookie.
+    refreshToken || req.body.refreshToken
+
+    if (incomingRefersf) {
+           throw new ApiError(401, "unauthorised request")
+      
+    }
+   
+  try {
+    const decodedToken =  Jwt.verify(
+      incomingRefersf,
+      process.env.REFRESH_TOKEN_SECRTE
+     ) 
+  
+    const user = await User.findById(decodedToken?._id)
+      
+    if (!user) {
+      throw new ApiError(401, "invalid refresh token")
+  
+    }
+  
+     if (incomingRefersf !== user?.refreshToken) {
+      throw new ApiError(401, "refresh token is exp.. use")
+        
+    }
+  
+    const options = {
+      httpOnly: true,
+      secure: true
+    }
+     const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
+  
+      return res 
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {accessToken, refreshToken: newRefreshToken },
+          "access token successs refresh"
+  
+        )
+      )
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid regresh token")
+    
+  }
+  
+})
+
+
 export {
     registerUser,
     LoginUser,
-    logoutUser
+    logoutUser,
+    refreshAccessToken
 }
