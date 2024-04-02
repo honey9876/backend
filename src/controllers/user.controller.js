@@ -189,7 +189,7 @@ const refreshAccessToken = asyncHandler(async (req, res)=> {
    const incomingRefersf = req.cookie.
     refreshToken || req.body.refreshToken
 
-    if (incomingRefersf) {
+    if (!incomingRefersfToken) {
            throw new ApiError(401, "unauthorised request")
       
     }
@@ -237,10 +237,47 @@ const refreshAccessToken = asyncHandler(async (req, res)=> {
   
 })
 
+const changeCurrentPassword = asyncHandler(async(req, res) => {
+   const {oldPassword, newPassword,} = req.body
+
+   await User.findById(req.user?._id)
+   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+
+   if (!isPasswordCorrect) {
+    throw new ApiError(400, "invalid your password")
+    
+   }
+
+
+    user.password = newPassword
+     await user.save({validateBeforeSave: false})
+
+
+
+     return res.status(200)
+     .json(new ApiResponse(200, {}, "password changr succcsefullt"))
+
+})
+
+const getCurrentUser = asyncHandler(async(req, res) => {
+  return res.status(200)
+  .json(200, "current user fatch succfelly")
+})
+
+const uodateAccountDetails = asyncHandler(async(req, res) => {
+
+  const {fullName, email} = req.body
+
+
+})
+
 
 export {
     registerUser,
     LoginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser
 }
