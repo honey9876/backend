@@ -255,20 +255,22 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
 
 
 
-     return res.status(200)
+     return res.
+     status(200)
      .json(new ApiResponse(200, {}, "password changr succcsefullt"))
 
 })
 
 const getCurrentUser = asyncHandler(async(req, res) => {
-  return res.status(200)
-  .json(200, "current user fatch succfelly")
+  return res.
+  status(200)
+  .json(new ApiResponse (
+    200,
+     "current user fatch succfelly"))
 })
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
-
   const {fullName, email} = req.body
-
 
   if (!fullName || !email) {
     throw new ApiError(400, "all field required")
@@ -295,8 +297,9 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
 
 });
 
-const updateUserCoverImage = asyncHandler(async(req, res) => {
-   const avatarLocalPath = req.file?.path
+const updateUserAvatar = asyncHandler(async(req, res) => {
+    
+  const avatarLocalPath = req.file?.path
 
    if (!avatarLocalPath) {
       throw new ApiError(400, "Avater file is misssing")
@@ -308,7 +311,6 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
 
    if (!avatar.url) {
        throw new ApiError(400, "error while uploding on avater")
-
 
    }
 
@@ -324,14 +326,14 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
 
 
    return res
-  .status(200)
-  .json(
+   .status(200)
+   .json(
     new ApiResponse(200, user, "avater image update succfully")
   )
 
 })
 
-const updateUserAvatar = asyncHandler(async(req, res) => {
+const updateUserCoverImage = asyncHandler(async(req, res) => {
   const coverImageLocalPath = req.file?.path
 
   if (!avatarLocalPath) {
