@@ -265,9 +265,104 @@ const getCurrentUser = asyncHandler(async(req, res) => {
   .json(200, "current user fatch succfelly")
 })
 
-const uodateAccountDetails = asyncHandler(async(req, res) => {
+const updateAccountDetails = asyncHandler(async(req, res) => {
 
   const {fullName, email} = req.body
+
+
+  if (!fullName || !email) {
+    throw new ApiError(400, "all field required")
+    
+  }
+   const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        fullName,
+        email: email
+      }
+    } ,
+    {new: true}
+
+  ).select("-password")
+  
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, "account details succcesefully"))
+
+
+
+});
+
+const updateUserCoverImage = asyncHandler(async(req, res) => {
+   const avatarLocalPath = req.file?.path
+
+   if (!avatarLocalPath) {
+      throw new ApiError(400, "Avater file is misssing")
+
+   }
+
+   const avatar = await uploadOnCloudinary
+   (avatarLocalPath)
+
+   if (!avatar.url) {
+       throw new ApiError(400, "error while uploding on avater")
+
+
+   }
+
+   const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    { 
+      $set: {
+        avatar: avatar.url
+      }
+    },
+    {new: true}
+   ).select("-password")
+
+
+   return res
+  .status(200)
+  .json(
+    new ApiResponse(200, user, "avater image update succfully")
+  )
+
+})
+
+const updateUserAvatar = asyncHandler(async(req, res) => {
+  const coverImageLocalPath = req.file?.path
+
+  if (!avatarLocalPath) {
+     throw new ApiError(400, "cover image  is misssing")
+
+  }
+
+  const coverImage = await uploadOnCloudinary
+  (coverImageLocalPathLocalPath)
+
+  if (!coverImage.url) {
+      throw new ApiError(400, "error while uploding the avatar")
+
+
+  }
+
+ const user = await User.findByIdAndUpdate(
+   req.user?._id,
+   { 
+     $set: {
+       coverImage: coverImage.url
+     }
+   },
+   {new: true}
+  ).select("-password")
+
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(200, user, "cover image update succfully")
+  )
 
 
 })
@@ -279,5 +374,8 @@ export {
     logoutUser,
     refreshAccessToken,
     changeCurrentPassword,
-    getCurrentUser
+    getCurrentUser,
+    updateAccountDetails,
+    updateUserAvatar,
+    updateUserCoverImage
 }
